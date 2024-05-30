@@ -12,3 +12,6 @@
 ### What does this Solution Aim to Solve
 - Train & deploy an ML model to understand how menu-item demand changes with varying price.
 - User-friendly application to use deployed ML-model to inform pricing strategies.
+
+## Step-By-Step Guide
+For prerequisites, environment setup, step-by-step guide and instructions, please refer to the QuickStart Guide.
