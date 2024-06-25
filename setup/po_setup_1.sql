@@ -45,7 +45,7 @@ type = 'csv';
 /*---------------------------*/
 -- create Stage 
 /*---------------------------*/
-CREATE OR REPLACE STAGE tb_po.public.s3load
+CREATE OR REPLACE STAGE tb_po_prod.public.COMMENT
 COMMENT = 'Quickstarts S3 Stage Connection'
 url = 's3://sfquickstarts/THIS NEEDS TO BE CREATED ONCE FILES ARE READY/'
 file_format = tb_po_prod.public.csv_ff;
@@ -232,6 +232,44 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.menu_prices
 	START_DATE DATE,
 	END_DATE DATE
 );
+
+/*---------------------------*/
+-- create raw_safegraph table
+/*---------------------------*/
+
+create or replace TABLE TB_PO_PROD.RAW_SAFEGRAPH.CORE_POI_GEOMETRY (
+	PLACEKEY VARCHAR(16777216),
+	PARENT_PLACEKEY VARCHAR(16777216),
+	SAFEGRAPH_BRAND_IDS VARCHAR(16777216),
+	LOCATION_NAME VARCHAR(16777216),
+	BRANDS VARCHAR(16777216),
+	STORE_ID VARCHAR(16777216),
+	TOP_CATEGORY VARCHAR(16777216),
+	SUB_CATEGORY VARCHAR(16777216),
+	NAICS_CODE NUMBER(38,0),
+	LATITUDE FLOAT,
+	LONGITUDE FLOAT,
+	STREET_ADDRESS VARCHAR(16777216),
+	CITY VARCHAR(16777216),
+	REGION VARCHAR(16777216),
+	POSTAL_CODE VARCHAR(16777216),
+	OPEN_HOURS VARIANT,
+	CATEGORY_TAGS VARCHAR(16777216),
+	OPENED_ON VARCHAR(16777216),
+	CLOSED_ON VARCHAR(16777216),
+	TRACKING_CLOSED_SINCE VARCHAR(16777216),
+	GEOMETRY_TYPE VARCHAR(16777216),
+	POLYGON_WKT VARCHAR(16777216),
+	POLYGON_CLASS VARCHAR(16777216),
+	ENCLOSED BOOLEAN,
+	PHONE_NUMBER VARCHAR(16777216),
+	IS_SYNTHETIC BOOLEAN,
+	INCLUDES_PARKING_LOT BOOLEAN,
+	ISO_COUNTRY_CODE VARCHAR(16777216),
+	WKT_AREA_SQ_METERS FLOAT,
+	COUNTRY VARCHAR(16777216)
+);
+
 
 /*---------------------------*/
 -- harmonized views
@@ -556,6 +594,10 @@ FROM @tb_po.public.s3load/raw_supply_chain/price_elasticity/;
 --> recipe
 COPY INTO tb_po_prod.raw_supply_chain.recipe
 FROM @tb_po.public.s3load/raw_supply_chain/recipe/;
+
+--> core_poi_geometry
+COPY INTO tb_po_prod.raw_safegraph.core_poi_geometry
+FROM @tb_po.public.s3load/raw_safegraph/core_poi_geometry/;
 
 
 /*---------------------------*/
