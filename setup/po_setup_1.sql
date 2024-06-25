@@ -4,21 +4,21 @@ USE ROLE sysadmin;
 /*---------------------------*/
 -- create our Database
 /*---------------------------*/
-CREATE OR REPLACE DATABASE tb_po;
+CREATE OR REPLACE DATABASE tb_po_prod;
 
 
 /*---------------------------*/
 -- create our Schemas
 /*---------------------------*/
-CREATE OR REPLACE SCHEMA tb_po.raw_pos;
+CREATE OR REPLACE SCHEMA tb_po_prod.raw_pos;
 
-CREATE OR REPLACE SCHEMA tb_po.raw_supply_chain;
+CREATE OR REPLACE SCHEMA tb_po_prod.raw_supply_chain;
 
-CREATE OR REPLACE SCHEMA tb_po.raw_customer;
+CREATE OR REPLACE SCHEMA tb_po_prod.raw_customer;
 
-CREATE OR REPLACE SCHEMA tb_po.harmonized;
+CREATE OR REPLACE SCHEMA tb_po_prod.harmonized;
 
-CREATE OR REPLACE SCHEMA tb_po.analytics;
+CREATE OR REPLACE SCHEMA tb_po_prod.analytics;
 
 /*---------------------------*/
 -- create our Warehouse
@@ -38,7 +38,7 @@ USE WAREHOUSE po_ds_wh;
 /*---------------------------*/
 -- create file format
 /*---------------------------*/
-CREATE OR REPLACE FILE FORMAT tb_po.public.csv_ff 
+CREATE OR REPLACE FILE FORMAT tb_po_prod.public.csv_ff
 type = 'csv';
 
 
@@ -48,7 +48,7 @@ type = 'csv';
 CREATE OR REPLACE STAGE tb_po.public.s3load
 COMMENT = 'Quickstarts S3 Stage Connection'
 url = 's3://sfquickstarts/THIS NEEDS TO BE CREATED ONCE FILES ARE READY/'
-file_format = tb_po.public.csv_ff;
+file_format = tb_po_prod.public.csv_ff;
 
 
 /*---------------------------*/
@@ -56,7 +56,7 @@ file_format = tb_po.public.csv_ff;
 /*---------------------------*/
 
 --> menu
-CREATE OR REPLACE TABLE tb_po.raw_pos.menu
+CREATE OR REPLACE TABLE tb_po_prod.raw_pos.menu
 (
     menu_id NUMBER(19,0),
     menu_type_id NUMBER(38,0),
@@ -72,7 +72,7 @@ CREATE OR REPLACE TABLE tb_po.raw_pos.menu
 );
 
 --> truck
-CREATE OR REPLACE TABLE tb_po.raw_pos.truck
+CREATE OR REPLACE TABLE tb_po_prod.raw_pos.truck
 (
     truck_id NUMBER(38,0),
     menu_type_id NUMBER(38,0),
@@ -91,7 +91,7 @@ CREATE OR REPLACE TABLE tb_po.raw_pos.truck
 );
 
 --> country
-CREATE OR REPLACE TABLE tb_po.raw_pos.country
+CREATE OR REPLACE TABLE tb_po_prod.raw_pos.country
 (
 	COUNTRY_ID NUMBER(18,0),
 	COUNTRY VARCHAR(16777216),
@@ -103,7 +103,7 @@ CREATE OR REPLACE TABLE tb_po.raw_pos.country
 );
 
 --> location
-CREATE OR REPLACE TABLE tb_po.raw_pos.location
+CREATE OR REPLACE TABLE tb_po_prod.raw_pos.location
 (
 	LOCATION_ID NUMBER(19,0),
 	PLACEKEY VARCHAR(16777216),
@@ -115,7 +115,7 @@ CREATE OR REPLACE TABLE tb_po.raw_pos.location
 );
 
 --> order_header
-CREATE OR REPLACE TABLE tb_po.raw_pos.order_header
+CREATE OR REPLACE TABLE tb_po_prod.raw_pos.order_header
 (
     order_id NUMBER(38,0),
     truck_id NUMBER(38,0),
@@ -136,7 +136,7 @@ CREATE OR REPLACE TABLE tb_po.raw_pos.order_header
 );
 
 --> order_detail
-CREATE OR REPLACE TABLE tb_po.raw_pos.order_detail
+CREATE OR REPLACE TABLE tb_po_prod.raw_pos.order_detail
 (
 	ORDER_DETAIL_ID NUMBER(38,0),
 	ORDER_ID NUMBER(38,0),
@@ -155,7 +155,7 @@ CREATE OR REPLACE TABLE tb_po.raw_pos.order_detail
 /*---------------------------*/
 
 --> customer_loyalty
-CREATE OR REPLACE TABLE tb_po.raw_customer.customer_loyalty
+CREATE OR REPLACE TABLE tb_po_prod.raw_customer.customer_loyalty
 (
 	CUSTOMER_ID NUMBER(38,0),
 	FIRST_NAME VARCHAR(16777216),
@@ -180,7 +180,7 @@ CREATE OR REPLACE TABLE tb_po.raw_customer.customer_loyalty
 /*---------------------------*/
 
 --> item
-CREATE OR REPLACE TABLE tb_po.raw_supply_chain.item
+CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.item
 (
 	ITEM_ID NUMBER(38,0),
 	NAME VARCHAR(16777216),
@@ -194,7 +194,7 @@ CREATE OR REPLACE TABLE tb_po.raw_supply_chain.item
 );
 
 --> recipe
-CREATE OR REPLACE TABLE tb_po.raw_supply_chain.recipe
+CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.recipe
 (
 	RECIPE_ID NUMBER(38,0),
 	MENU_ITEM_ID NUMBER(38,0),
@@ -204,7 +204,7 @@ CREATE OR REPLACE TABLE tb_po.raw_supply_chain.recipe
 );
 
 --> item_prices
-CREATE OR REPLACE TABLE tb_po.raw_supply_chain.item_prices
+CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.item_prices
 (
 	ITEM_ID NUMBER(38,0),
 	UNIT_PRICE NUMBER(38,2),
@@ -213,7 +213,7 @@ CREATE OR REPLACE TABLE tb_po.raw_supply_chain.item_prices
 );
 
 --> price_elasticity
-CREATE OR REPLACE TABLE tb_po.raw_supply_chain.price_elasticity
+CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.price_elasticity
 (
 	PE_ID NUMBER(11,0),
 	MENU_ITEM_ID NUMBER(38,0),
@@ -225,7 +225,7 @@ CREATE OR REPLACE TABLE tb_po.raw_supply_chain.price_elasticity
 );
 
 --> menu_prices
-CREATE OR REPLACE TABLE tb_po.raw_supply_chain.menu_prices
+CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.menu_prices
 (
 	MENU_ITEM_ID NUMBER(38,0),
 	SALES_PRICE_USD NUMBER(38,2),
@@ -238,7 +238,7 @@ CREATE OR REPLACE TABLE tb_po.raw_supply_chain.menu_prices
 /*---------------------------*/
 
 --> orders_v
-CREATE OR REPLACE VIEW tb_po.harmonized.orders_v
+CREATE OR REPLACE VIEW tb_po_prod.harmonized.orders_v
 	AS
 SELECT 
     oh.order_id,
@@ -274,23 +274,23 @@ SELECT
     oh.order_tax_amount,
     oh.order_discount_amount,
     oh.order_total
-FROM tb_po.raw_pos.order_detail od
-JOIN tb_po.raw_pos.order_header oh
+FROM tb_po_prod.raw_pos.order_detail od
+JOIN tb_po_prod.raw_pos.order_header oh
     ON od.order_id = oh.order_id
-JOIN tb_po.raw_pos.truck_id t
+JOIN tb_po_prod.raw_pos.truck_id t
     ON oh.truck_id = t.truck_id
-JOIN tb_po.raw_pos.menu m
+JOIN tb_po_prod.raw_pos.menu m
     ON od.menu_item_id = m.menu_item_id
-JOIN tb_po.raw_pos.franchise f
+JOIN tb_po_prod.raw_pos.franchise f
     ON t.franchise_id = f.franchise_id
-JOIN tb_po.raw_pos.location l
+JOIN tb_po_prod.raw_pos.location l
     ON oh.location_id = l.location_id
-LEFT JOIN tb_po.raw_customer.customer_loyalty cl
+LEFT JOIN tb_po_prod.raw_customer.customer_loyalty cl
     ON oh.customer_id = cl.customer_id
   );
 
 --> order_item_cost_v
-CREATE OR REPLACE VIEW tb_po.harmonized.order_item_cost_v
+CREATE OR REPLACE VIEW tb_po_prod.harmonized.order_item_cost_v
 	AS
 WITH _menu_item_cogs_and_price AS
 (
@@ -300,15 +300,15 @@ WITH _menu_item_cogs_and_price AS
         ip.end_date,
         SUM(ip.unit_price * r.unit_quantity) OVER (PARTITION BY r.menu_item_id, ip.start_date, ip.end_date) AS cost_of_goods_usd,
         mp.sales_price_usd AS base_price
-    FROM tb_po.raw_supply_chain.item i
-    JOIN tb_po.raw_supply_chain.recipe r
+    FROM tb_po_prod.raw_supply_chain.item i
+    JOIN tb_po_prod.raw_supply_chain.recipe r
         ON i.item_id = r.item_id
-    JOIN tb_po.raw_supply_chain.item_prices ip
+    JOIN tb_po_prod.raw_supply_chain.item_prices ip
         ON ip.item_id = r.item_id
-    JOIN tb_po.raw_supply_chain.menu_prices mp
+    JOIN tb_po_prod.raw_supply_chain.menu_prices mp
         ON mp.menu_item_id = r.menu_item_id
         AND mp.start_date = ip.start_date
-    JOIN tb_po.raw_pos.menu m
+    JOIN tb_po_prod.raw_pos.menu m
         ON m.menu_item_id = mp.menu_item_id
     WHERE m.item_category <> 'Extra'
 ),
@@ -325,8 +325,8 @@ _order_item_total AS
         oh.order_amount,
         m.cost_of_goods_usd * od.quantity AS order_item_cog,
         SUM(order_item_cog) OVER (PARTITION BY oh.order_id) AS order_cog
-    FROM tb_po.raw_pos.order_header oh
-    JOIN tb_po.raw_pos.order_detail od
+    FROM tb_po_prod.raw_pos.order_header oh
+    JOIN tb_po_prod.raw_pos.order_detail od
         ON oh.order_id = od.order_id
     JOIN _menu_item_cogs_and_price m
         ON od.menu_item_id = m.menu_item_id 
@@ -349,7 +349,7 @@ FROM _order_item_total oi
   );
 
 --> _menu_item_cogs_and_price_v
-CREATE OR REPLACE VIEW tb_po.harmonzied._menu_item_cogs_and_price_v
+CREATE OR REPLACE VIEW tb_po_prod.harmonzied._menu_item_cogs_and_price_v
 	AS
 SELECT DISTINCT
     r.menu_item_id,
@@ -359,19 +359,19 @@ SELECT DISTINCT
         OVER (PARTITION BY r.menu_item_id, ip.start_date, ip.end_date)
             AS cost_of_menu_item_usd,
     mp.sales_price_usd
-FROM tb_po.raw_supply_chain.ITEM i
-JOIN tb_po.raw_supply_chain.RECIPE r
+FROM tb_po_prod.raw_supply_chain.ITEM i
+JOIN tb_po_prod.raw_supply_chain.RECIPE r
     ON i.item_id = r.item_id
-JOIN tb_po.raw_supply_chain.ITEM_PRICES ip
+JOIN tb_po_prod.raw_supply_chain.ITEM_PRICES ip
     ON ip.item_id = r.item_id
-JOIN tb_po.raw_supply_chain.MENU_PRICES mp
+JOIN tb_po_prod.raw_supply_chain.MENU_PRICES mp
     ON mp.menu_item_id = r.menu_item_id
     AND mp.start_date = ip.start_date
 ORDER BY r.menu_item_id, ip.start_date
   );
 
 --> menu_item_aggregate_v
-CREATE OR REPLACE VIEW tb_po.harmonized.menu_item_aggregate_v
+CREATE OR REPLACE VIEW tb_po_prod.harmonized.menu_item_aggregate_v
 	AS
 WITH _point_in_time_cogs AS
 (
@@ -382,10 +382,10 @@ WITH _point_in_time_cogs AS
         SUM(ip.unit_price * r.unit_quantity) 
             OVER (PARTITION BY r.menu_item_id, ip.start_date, ip.end_date)
                 AS cost_of_menu_item_usd
-    FROM tb_po.raw_supply_chain.item i
-    JOIN tb_po.raw_supply_chain.recipe r
+    FROM tb_po_prod.raw_supply_chain.item i
+    JOIN tb_po_prod.raw_supply_chain.recipe r
         ON i.item_id = r.item_id
-    JOIN tb_po.raw_supply_chain.item_prices ip
+    JOIN tb_po_prod.raw_supply_chain.item_prices ip
         ON ip.item_id = r.item_id
     ORDER BY r.menu_item_id, ip.start_date
 )
@@ -405,18 +405,18 @@ SELECT
     COUNT(DISTINCT oh.order_id) AS count_orders,
     SUM(od.quantity) AS total_quantity_sold,
     NULL AS competitor_price
-FROM tb_po.raw_pos.order_header oh
-JOIN tb_po.raw_pos.order_detail od
+FROM tb_po_prod.raw_pos.order_header oh
+JOIN tb_po_prod.raw_pos.order_detail od
     ON oh.order_id = od.order_id
-JOIN tb_po.raw_pos.menu m
+JOIN tb_po_prod.raw_pos.menu m
     ON m.menu_item_id = od.menu_item_id
-JOIN tb_po.raw_supply_chain.menu_prices mp
+JOIN tb_po_prod.raw_supply_chain.menu_prices mp
     ON mp.menu_item_id = m.menu_item_id
     AND DATE(oh.order_ts) BETWEEN mp.start_date AND mp.end_date
 JOIN _point_in_time_cogs pitcogs
     ON pitcogs.menu_item_id = m.menu_item_id
     AND DATE(oh.order_ts) BETWEEN pitcogs.start_date AND pitcogs.end_date
-LEFT JOIN tb_po.raw_supply_chain.price_elasticity pe
+LEFT JOIN tb_po_prod.raw_supply_chain.price_elasticity pe
     ON pe.menu_item_id = m.menu_item_id
     AND pe.from_date <= DATE(oh.order_ts)
     AND pe.through_date >= DATE(oh.order_ts)
@@ -431,18 +431,18 @@ ORDER BY date, m.menu_item_id;
 /*---------------------------*/
 
 --> menu_item_aggregate_v
-CREATE OR REPLACE VIEW tb_po.analytics.menu_item_aggregate_v
+CREATE OR REPLACE VIEW tb_po_prod.analytics.menu_item_aggregate_v
 	AS
 SELECT * RENAME sale_price AS price
-FROM tb_po.harmonized.menu_item_aggregate_v;
+FROM tb_po_prod.harmonized.menu_item_aggregate_v;
 
 --> menu_item_cogs_and_price_v
-CREATE OR REPLACE VIEW tb_po.analytics.menu_item_cogs_and_price_v
+CREATE OR REPLACE VIEW tb_po_prod.analytics.menu_item_cogs_and_price_v
 	AS
-SELECT * FROM tb_po.harmonized.menu_item_cogs_and_price_v;
+SELECT * FROM tb_po_prod.harmonized.menu_item_cogs_and_price_v;
 
 --> order_item_cost_agg_v
-CREATE OR REPLACE VIEW tb_po.analytics.order_item_cost_agg_v
+CREATE OR REPLACE VIEW tb_po_prod.analytics.order_item_cost_agg_v
 	AS
 SELECT 
     year, 
@@ -464,7 +464,7 @@ FROM
             SUM(oic1.order_amt_wo_item) / SUM(oic1.quantity) AS avg_revenue_wo_item,
             SUM(oic1.order_cog_wo_item) / SUM(oic1.quantity) AS avg_cost_wo_item,
             (SUM(oic1.order_amt_wo_item) - SUM(oic1.order_cog_wo_item)) /SUM(oic1.quantity) AS avg_profit_wo_item
-        FROM tb_po.harmonized.order_item_cost_v oic1
+        FROM tb_po_prod.harmonized.order_item_cost_v oic1
         GROUP BY oic1.menu_item_id, YEAR(oic1.date), MONTH(oic1.date)
     )
 UNION
@@ -486,14 +486,14 @@ UNION
             SELECT DISTINCT 
                 oh.menu_item_id,
                 DATE(oh.order_ts) AS date 
-            FROM tb_po.harmonized.orders_v oh
+            FROM tb_po_prod.harmonized.orders_v oh
         ) oic2
     JOIN
         (
         SELECT 
             MONTH(MAX(DATE(oh.order_ts))) AS max_month,
             YEAR(MAX(DATE(oh.order_ts))) AS max_year
-        FROM tb_po.harmonized.orders_v oh
+        FROM tb_po_prod.harmonized.orders_v oh
         ) max_date
 ON YEAR(oic2.date) = max_date.max_year AND MONTH(oic2.date) = max_date.max_month
     )
@@ -506,55 +506,55 @@ ORDER BY oic.menu_item_id, oic.year, oic.month)avg_r_c_wo_item;
 /*---------------------------*/
 
 --> country
-COPY INTO tb_po.raw_pos.country
+COPY INTO tb_po_prod.raw_pos.country
 FROM @tb_po.public.s3load/raw_pos/country/;
 
 --> franchise
-COPY INTO tb_po.raw_pos.franchise
+COPY INTO tb_po_prod.raw_pos.franchise
 FROM @tb_po.public.s3load/raw_pos/franchise/;
 
 --> location
-COPY INTO tb_po.raw_pos.location
+COPY INTO tb_po_prod.raw_pos.location
 FROM @tb_po.public.s3load/raw_pos/location/;
 
 --> menu
-COPY INTO tb_po.raw_pos.menu
+COPY INTO tb_po_prod.raw_pos.menu
 FROM @tb_po.public.s3load/raw_pos/menu/;
 
 --> truck
-COPY INTO tb_po.raw_pos.truck
+COPY INTO tb_po_prod.raw_pos.truck
 FROM @tb_po.public.s3load/raw_pos/truck/;
 
 --> customer_loyalty
-COPY INTO tb_po.raw_customer.customer_loyalty
+COPY INTO tb_po_prod.raw_customer.customer_loyalty
 FROM @tb_po.public.s3load/raw_customer/customer_loyalty/;
 
 --> order_header
-COPY INTO tb_po.raw_pos.order_header
+COPY INTO tb_po_prod.raw_pos.order_header
 FROM @tb_po.public.s3load/raw_pos/order_header/;
 
 --> order_detail
-COPY INTO tb_po.raw_pos.order_detail
+COPY INTO tb_po_prod.raw_pos.order_detail
 FROM @tb_po.public.s3load/raw_pos/order_detail/;
 
 --> item
-COPY INTO tb_po.raw_supply_chain.item
+COPY INTO tb_po_prod.raw_supply_chain.item
 FROM @tb_po.public.s3load/raw_supply_chain/item/;
 
 --> item_prices
-COPY INTO tb_po.raw_supply_chain.item_prices
+COPY INTO tb_po_prod.raw_supply_chain.item_prices
 FROM @tb_po.public.s3load/raw_supply_chain/item_prices/;
 
 --> menu_prices
-COPY INTO tb_po.raw_supply_chain.menu_prices
+COPY INTO tb_po_prod.raw_supply_chain.menu_prices
 FROM @tb_po.public.s3load/raw_supply_chain/item/;
 
 --> price_elasticity
-COPY INTO tb_po.raw_supply_chain.price_elasticity
+COPY INTO tb_po_prod.raw_supply_chain.price_elasticity
 FROM @tb_po.public.s3load/raw_supply_chain/price_elasticity/;
 
 --> recipe
-COPY INTO tb_po.raw_supply_chain.recipe
+COPY INTO tb_po_prod.raw_supply_chain.recipe
 FROM @tb_po.public.s3load/raw_supply_chain/recipe/;
 
 
