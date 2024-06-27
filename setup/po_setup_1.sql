@@ -347,7 +347,7 @@ SELECT
 FROM tb_po_prod.raw_pos.order_detail od
 JOIN tb_po_prod.raw_pos.order_header oh
     ON od.order_id = oh.order_id
-JOIN tb_po_prod.raw_pos.truck_id t
+JOIN tb_po_prod.raw_pos.truck t
     ON oh.truck_id = t.truck_id
 JOIN tb_po_prod.raw_pos.menu m
     ON od.menu_item_id = m.menu_item_id
