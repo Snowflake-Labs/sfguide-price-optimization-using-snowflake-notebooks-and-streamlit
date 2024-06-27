@@ -42,8 +42,15 @@ USE WAREHOUSE po_ds_wh;
 /*---------------------------*/
 -- create file format
 /*---------------------------*/
-CREATE OR REPLACE FILE FORMAT tb_po_prod.public.csv_ff
-type = 'csv';
+-- CREATE OR REPLACE FILE FORMAT tb_po_prod.public.csv_ff
+-- type = 'csv';
+
+create or replace file format tb_po_prod.public.csv_ff
+type = 'CSV'
+field_delimiter = ','
+record_delimiter = '\n'
+field_optionally_enclosed_by = '"'
+skip_header = 1;
 
 
 /*---------------------------*/
@@ -70,6 +77,18 @@ CREATE OR REPLACE STAGE tb_po_prod.public.raw_supply_chain_s3
 CREATE OR REPLACE STAGE tb_po_prod.public.excel_s3
   URL = 's3://sfquickstarts/frostbyte_tastybytes/excel'
   FILE_FORMAT = tb_po_prod.public.csv_ff;
+
+-- raw_pos
+CREATE OR REPLACE STAGE tb_po_prod.public.raw_pos_s3
+  URL = 's3://sfquickstarts/frostbyte_tastybytes/raw_pos'
+  FILE_FORMAT = tb_po_prod.public.csv_ff;
+
+
+-- raw_customer
+CREATE OR REPLACE STAGE tb_po_prod.public.raw_customer_s3
+  URL = 's3://sfquickstarts/frostbyte_tastybytes/raw_customer'
+  FILE_FORMAT = tb_po_prod.public.csv_ff;
+
 
 /*---------------------------*/
 -- create raw_pos tables
@@ -310,7 +329,7 @@ create or replace TABLE tb_po_prod.raw_safegraph.core_poi_geometry (
 --> orders_v
 CREATE OR REPLACE VIEW tb_po_prod.harmonized.orders_v
 	AS
-SELECT 
+SELECT
     oh.order_id,
     oh.truck_id,
     oh.order_ts,
@@ -571,11 +590,17 @@ ON YEAR(oic2.date) = max_date.max_year AND MONTH(oic2.date) = max_date.max_month
 ORDER BY oic.menu_item_id, oic.year, oic.month)avg_r_c_wo_item;
 
 
+
+
 /*---------------------------*/
 -- raw data load
 /*---------------------------*/
 
 --> country
+COPY INTO tb_po_prod.raw_pos.country
+FROM @tb_po_prod.public.raw_pos_s3/country/country.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
 COPY INTO tb_po_prod.raw_pos.country
 FROM @tb_po_prod.public/raw_pos/country/;
 
@@ -627,18 +652,11 @@ FROM @tb_po_prod.public.s3load/raw_supply_chain/price_elasticity/;
 COPY INTO tb_po_prod.raw_supply_chain.recipe
 FROM @tb_po_prod.public.s3load/raw_supply_chain/recipe;
 
-create or replace file format my_csv_format
-type = 'CSV'
-field_delimiter = ','
-record_delimiter = '\n'
-field_optionally_enclosed_by = '"'
-skip_header = 1;
-
 
 --> core_poi_geometry
 COPY INTO tb_po_prod.raw_safegraph.core_poi_geometry
 FROM @tb_po_prod.public.raw_safegraph_s3/core_poi_geometry.csv
-file_format = (format_name = 'my_csv_format');
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 select * from raw_safegraph.core_poi_geometry;
 
