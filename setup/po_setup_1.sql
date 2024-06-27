@@ -257,7 +257,7 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.menu_prices
 -- create raw_safegraph table
 /*---------------------------*/
 
-create or replace TABLE TB_PO_PROD.RAW_SAFEGRAPH.CORE_POI_GEOMETRY (
+create or replace TABLE tb_po_prod.raw_safegraph.core_poi_geometry (
 	PLACEKEY VARCHAR(16777216),
 	PARENT_PLACEKEY VARCHAR(16777216),
 	SAFEGRAPH_BRAND_IDS VARCHAR(16777216),
@@ -407,7 +407,7 @@ FROM _order_item_total oi
   );
 
 --> _menu_item_cogs_and_price_v
-CREATE OR REPLACE VIEW tb_po_prod.harmonzied._menu_item_cogs_and_price_v
+CREATE OR REPLACE VIEW tb_po_prod.harmonized._menu_item_cogs_and_price_v
 	AS
 SELECT DISTINCT
     r.menu_item_id,
