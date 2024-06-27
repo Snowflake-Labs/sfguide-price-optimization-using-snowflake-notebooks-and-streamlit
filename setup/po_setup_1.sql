@@ -20,6 +20,10 @@ CREATE OR REPLACE SCHEMA tb_po_prod.harmonized;
 
 CREATE OR REPLACE SCHEMA tb_po_prod.analytics;
 
+CREATE OR REPLACE SCHEMA tb_po_prod.raw_safegraph;
+
+CREATE OR REPLACE SCHEMA tb_po_prod.s3;
+
 /*---------------------------*/
 -- create our Warehouse
 /*---------------------------*/
