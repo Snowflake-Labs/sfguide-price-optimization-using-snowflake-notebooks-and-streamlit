@@ -2,11 +2,11 @@
 USE ROLE sysadmin;
 
 /*---------------------------*/
--- use and scale our PO_DS_WH warehouse
+-- use and scale our TB_PO_DS_WH warehouse
 /*---------------------------*/
-USE WAREHOUSE po_ds_wh;
+USE WAREHOUSE tb_po_ds_wh;
 
-ALTER warehouse po_ds_wh SET warehouse_size='large';
+ALTER warehouse tb_po_ds_wh SET warehouse_size='large';
 
 
 /*---------------------------*/
