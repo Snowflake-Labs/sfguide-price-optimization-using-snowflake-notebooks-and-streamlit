@@ -25,19 +25,28 @@ CREATE OR REPLACE SCHEMA tb_po_prod.raw_safegraph;
 CREATE OR REPLACE SCHEMA tb_po_prod.public;
 
 /*---------------------------*/
--- create our Warehouse
+-- create our Warehouses
 /*---------------------------*/
-CREATE OR REPLACE WAREHOUSE po_ds_wh
-    WAREHOUSE_SIZE = 'xxlarge'
+
+-- data science warehouse
+CREATE OR REPLACE WAREHOUSE tb_po_ds_wh
+    WAREHOUSE_SIZE = 'xxxlarge'
     WAREHOUSE_TYPE = 'standard'
     AUTO_SUSPEND = 60
     AUTO_RESUME = TRUE
     INITIALLY_SUSPENDED = TRUE
 COMMENT = 'data science warehouse for tasty bytes';
 
+CREATE OR REPLACE WAREHOUSE tb_po_app_wh
+    WAREHOUSE_SIZE = 'xsmall'
+    WAREHOUSE_TYPE = 'standard'
+    AUTO_SUSPEND = 60
+    AUTO_RESUME = TRUE
+    INITIALLY_SUSPENDED = TRUE
+COMMENT = 'streamlit app warehouse for tasty bytes';
 
 -- use our Warehouse
-USE WAREHOUSE po_ds_wh;
+USE WAREHOUSE tb_po_ds_wh;
 
 /*---------------------------*/
 -- create file format
@@ -671,7 +680,7 @@ file_format = (format_name = 'tb_po_prod.public.csv_ff');
 /*---------------------------*/
 -- scale down warehouse after load
 /*---------------------------*/
-ALTER WAREHOUSE po_ds_wh SET WAREHOUSE_SIZE = 'Large';
+ALTER WAREHOUSE tb_po_ds_wh SET WAREHOUSE_SIZE = 'Large';
 
 
 /*---------------------------*/
