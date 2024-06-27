@@ -1,4 +1,4 @@
--- assume our SYSADMIN role
+FROSTBYTE_TASTY_BYTES_SETUP_S-- assume our SYSADMIN role
 USE ROLE sysadmin;
 
 /*---------------------------*/
@@ -601,64 +601,71 @@ COPY INTO tb_po_prod.raw_pos.country
 FROM @tb_po_prod.public.raw_pos_s3/country/country.csv
 file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
-COPY INTO tb_po_prod.raw_pos.country
-FROM @tb_po_prod.public/raw_pos/country/;
-
 --> franchise
 COPY INTO tb_po_prod.raw_pos.franchise
-FROM @tb_po_prod.public.s3load/raw_pos/franchise/;
+FROM @tb_po_prod.public.raw_pos_s3/franchise/franchise.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> location
 COPY INTO tb_po_prod.raw_pos.location
-FROM @tb_po_prod.public.s3load/raw_pos/location/;
+FROM @tb_po_prod.public.raw_pos_s3/location/location.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> menu
 COPY INTO tb_po_prod.raw_pos.menu
-FROM @tb_po_prod.public.s3load/raw_pos/menu/;
+FROM @tb_po_prod.public.raw_pos_s3/menu/menu.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> truck
 COPY INTO tb_po_prod.raw_pos.truck
-FROM @tb_po_prod.public.s3load/raw_pos/truck/;
+FROM @tb_po_prod.public.raw_pos_s3/truck/truck.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> customer_loyalty
 COPY INTO tb_po_prod.raw_customer.customer_loyalty
-FROM @tb_po_prod.public.s3load/raw_customer/customer_loyalty/;
+FROM @tb_po_prod.public.raw_customer_s3/customer_loyalty
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> order_header
 COPY INTO tb_po_prod.raw_pos.order_header
-FROM @tb_po_prod.public.s3load/raw_pos/order_header/;
+FROM @tb_po_prod.public.raw_pos_s3/order_header
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> order_detail
 COPY INTO tb_po_prod.raw_pos.order_detail
-FROM @tb_po_prod.public.s3load/raw_pos/order_detail/;
+FROM @tb_po_prod.public.raw_pos_s3/order_detail
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> item
 COPY INTO tb_po_prod.raw_supply_chain.item
-FROM @tb_po_prod.public.s3load/raw_supply_chain/item/;
+FROM @tb_po_prod.public.raw_supply_chain_s3/item
+ON_ERROR = skip_file
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> item_prices
 COPY INTO tb_po_prod.raw_supply_chain.item_prices
-FROM @tb_po_prod.public.s3load/raw_supply_chain/item_prices/;
+FROM @tb_po_prod.public.raw_supply_chain_s3/item_prices
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> menu_prices
 COPY INTO tb_po_prod.raw_supply_chain.menu_prices
-FROM @tb_po_prod.public.s3load/raw_supply_chain/item/;
+FROM @tb_po_prod.public.raw_supply_chain_s3/menu_prices
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> price_elasticity
 COPY INTO tb_po_prod.raw_supply_chain.price_elasticity
-FROM @tb_po_prod.public.s3load/raw_supply_chain/price_elasticity/;
+FROM @tb_po_prod.public.raw_supply_chain_s3/price_elasticity
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> recipe
 COPY INTO tb_po_prod.raw_supply_chain.recipe
-FROM @tb_po_prod.public.s3load/raw_supply_chain/recipe;
-
+FROM @tb_po_prod.public.raw_supply_chain_s3/recipe
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> core_poi_geometry
 COPY INTO tb_po_prod.raw_safegraph.core_poi_geometry
 FROM @tb_po_prod.public.raw_safegraph_s3/core_poi_geometry.csv
 file_format = (format_name = 'tb_po_prod.public.csv_ff');
-
-select * from raw_safegraph.core_poi_geometry;
 
 
 /*---------------------------*/
