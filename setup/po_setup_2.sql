@@ -14,7 +14,7 @@ ALTER warehouse po_ds_wh SET warehouse_size='large';
 /*---------------------------*/
 
 --> create the table that the app will write back to
-CREATE OR REPLACE TABLE tb_po.analytics.pricing_final
+CREATE OR REPLACE TABLE tb_po_prod.analytics.pricing_final
 (
 	brand VARCHAR(16777216),
 	item VARCHAR(16777216),
@@ -28,7 +28,7 @@ CREATE OR REPLACE TABLE tb_po.analytics.pricing_final
 );
 
 --> create the table with required pricing information for the app
-CREATE OR REPLACE TABLE tb_po.analytics.pricing_detail AS
+CREATE OR REPLACE TABLE tb_po_prod.analytics.pricing_detail AS
 SELECT 
     a.truck_brand_name AS brand,
     a.menu_item_name AS item,
@@ -43,7 +43,7 @@ SELECT
     END AS day_of_week,
     ROUND(b.price::FLOAT, 2) AS current_price,
     ROUND(a.price::FLOAT, 2) AS recommended_price,
-    tb_po.analytics.DEMAND_ESTIMATION_MODEL!PREDICT(
+    tb_po_prod.analytics.DEMAND_ESTIMATION_MODEL!PREDICT(
         current_price,
         current_price - c.base_price,
         c.base_price,
@@ -60,7 +60,7 @@ SELECT
         c.price_change_year_roll,
         c.price_change_month_roll
     )::INT AS current_price_demand,
-    tb_po.analytics.demand_estimate_model!PREDICT(
+    tb_po_prod.analytics.demand_estimate_model!PREDICT(
         recommended_price,
         recommended_price - c.base_price,
         c.base_price,
@@ -102,29 +102,29 @@ SELECT
     current_price_demand * (average_basket_profit + current_price - item_cost) AS current_price_profit
 FROM (
     SELECT p.*, m.menu_item_name 
-    FROM tb_po.analytics.price_recommendations p 
-    LEFT JOIN tb_po.raw_pos.menu m ON p.menu_item_id = m.menu_item_id
+    FROM tb_po_prod.analytics.price_recommendations p
+    LEFT JOIN tb_po_prod.raw_pos.menu m ON p.menu_item_id = m.menu_item_id
 ) a
 LEFT JOIN (
     SELECT * 
-    FROM tb_po.analytics.demand_est_input_full 
+    FROM tb_po_prod.analytics.demand_est_input_full
     WHERE month = 3 AND year = 2023
 ) b ON a.day_of_week = b.day_of_week AND a.menu_item_id = b.menu_item_id
 LEFT JOIN (
     SELECT * 
-    FROM tb_po.analytics.demand_est_input_full 
+    FROM tb_po_prod.analytics.demand_est_input_full
     WHERE month = 4 AND year = 2023
 ) c ON a.day_of_week = c.day_of_week AND a.menu_item_id = c.menu_item_id
 LEFT JOIN (
     SELECT * 
-    FROM tb_po.analytics.order_item_cost_agg_v 
+    FROM tb_po_prod.analytics.order_item_cost_agg_v
     WHERE month = 4 AND year = 2023
 ) d ON a.menu_item_id = d.menu_item_id
 ORDER BY brand, item, day_of_week;
 
 
 --> create pricing table to be displayed in the app
-CREATE OR REPLACE TABLE tb_po.analytics.pricing 
+CREATE OR REPLACE TABLE tb_po_prod.analytics.pricing
     AS 
 SELECT
     brand, 
@@ -134,4 +134,4 @@ SELECT
     current_price, 
     recommended_price, 
     profit_lift
-FROM tb_po.analytics.pricing_detail;
+FROM tb_po_prod.analytics.pricing_detail;
