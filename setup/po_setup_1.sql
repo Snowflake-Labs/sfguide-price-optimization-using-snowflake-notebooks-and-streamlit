@@ -22,7 +22,7 @@ CREATE OR REPLACE SCHEMA tb_po_prod.analytics;
 
 CREATE OR REPLACE SCHEMA tb_po_prod.raw_safegraph;
 
-CREATE OR REPLACE SCHEMA tb_po_prod.s3;
+CREATE OR REPLACE SCHEMA tb_po_prod.public;
 
 /*---------------------------*/
 -- create our Warehouse
@@ -47,13 +47,29 @@ type = 'csv';
 
 
 /*---------------------------*/
--- create Stage 
+-- create Stages
 /*---------------------------*/
-CREATE OR REPLACE STAGE tb_po_prod.public.COMMENT
-COMMENT = 'Quickstarts S3 Stage Connection'
-url = 's3://sfquickstarts/THIS NEEDS TO BE CREATED ONCE FILES ARE READY/'
-file_format = tb_po_prod.public.csv_ff;
+CREATE OR REPLACE STAGE tb_po_prod.public.analytics_s3
+  URL = 's3://sfquickstarts/frostbyte_tastybytes/analytics'
+  FILE_FORMAT = tb_po_prod.public.csv_ff;
 
+CREATE OR REPLACE STAGE tb_po_prod.public.harmonized_s3
+  URL = 's3://sfquickstarts/frostbyte_tastybytes/harmonized'
+  FILE_FORMAT = tb_po_prod.public.csv_ff;
+
+-- raw_safegraph s3
+CREATE OR REPLACE STAGE tb_po_prod.public.raw_safegraph_s3
+  URL = 's3://sfquickstarts/frostbyte_tastybytes/raw_safegraph'
+  FILE_FORMAT = tb_po_prod.public.csv_ff;
+
+-- raw_supply_chain s3
+CREATE OR REPLACE STAGE tb_po_prod.public.raw_supply_chain_s3
+  URL = 's3://sfquickstarts/frostbyte_tastybytes/raw_supply_chain'
+  FILE_FORMAT = tb_po_prod.public.csv_ff;
+
+CREATE OR REPLACE STAGE tb_po_prod.public.excel_s3
+  URL = 's3://sfquickstarts/frostbyte_tastybytes/excel'
+  FILE_FORMAT = tb_po_prod.public.csv_ff;
 
 /*---------------------------*/
 -- create raw_pos tables
