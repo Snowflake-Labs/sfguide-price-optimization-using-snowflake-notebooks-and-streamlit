@@ -419,7 +419,7 @@ FROM _order_item_total oi
   );
 
 --> _menu_item_cogs_and_price_v
-CREATE OR REPLACE VIEW tb_po_prod.harmonized._menu_item_cogs_and_price_v
+CREATE OR REPLACE VIEW tb_po_prod.harmonized.menu_item_cogs_and_price_v
 	AS
 SELECT DISTINCT
     r.menu_item_id,
