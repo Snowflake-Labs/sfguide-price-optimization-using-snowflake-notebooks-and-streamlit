@@ -119,6 +119,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_pos.menu
     menu_item_health_metrics_obj VARIANT
 );
 
+--> menu
+COPY INTO tb_po_prod.raw_pos.menu
+FROM @tb_po_prod.public.raw_pos_s3/menu/menu.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
 --> truck
 CREATE OR REPLACE TABLE tb_po_prod.raw_pos.truck
 (
@@ -138,6 +143,12 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_pos.truck
     truck_opening_date DATE
 );
 
+--> truck
+COPY INTO tb_po_prod.raw_pos.truck
+FROM @tb_po_prod.public.raw_pos_s3/truck/truck.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
+
 --> country
 CREATE OR REPLACE TABLE tb_po_prod.raw_pos.country
 (
@@ -149,6 +160,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_pos.country
 	CITY VARCHAR(16777216),
 	CITY_POPULATION NUMBER(38,0)
 );
+
+--> country
+COPY INTO tb_po_prod.raw_pos.country
+FROM @tb_po_prod.public.raw_pos_s3/country/country.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> franchise
 CREATE OR REPLACE TABLE tb_po_prod.raw_pos.franchise
@@ -162,6 +178,12 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_pos.franchise
 	PHONE_NUMBER VARCHAR(16777216)
 );
 
+--> franchise
+COPY INTO tb_po_prod.raw_pos.franchise
+FROM @tb_po_prod.public.raw_pos_s3/franchise/franchise.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
+
 --> location
 CREATE OR REPLACE TABLE tb_po_prod.raw_pos.location
 (
@@ -173,6 +195,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_pos.location
 	ISO_COUNTRY_CODE VARCHAR(16777216),
 	COUNTRY VARCHAR(16777216)
 );
+
+--> location
+COPY INTO tb_po_prod.raw_pos.location
+FROM @tb_po_prod.public.raw_pos_s3/location/location.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> order_header
 CREATE OR REPLACE TABLE tb_po_prod.raw_pos.order_header
@@ -195,6 +222,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_pos.order_header
     order_total NUMBER(38,4)
 );
 
+COPY INTO tb_po_prod.raw_pos.order_header
+FROM @tb_po_prod.public.raw_pos_s3/order_header
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
+
 --> order_detail
 CREATE OR REPLACE TABLE tb_po_prod.raw_pos.order_detail
 (
@@ -209,6 +241,10 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_pos.order_detail
 	ORDER_ITEM_DISCOUNT_AMOUNT VARCHAR(16777216)
 );
 
+--> order_detail
+COPY INTO tb_po_prod.raw_pos.order_detail
+FROM @tb_po_prod.public.raw_pos_s3/order_detail
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 /*---------------------------*/
 -- create raw_customer table
@@ -234,6 +270,10 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_customer.customer_loyalty
 	PHONE_NUMBER VARCHAR(16777216)
 );
 
+--> customer_loyalty
+COPY INTO tb_po_prod.raw_customer.customer_loyalty
+FROM @tb_po_prod.public.raw_customer_s3/customer_loyalty
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 /*---------------------------*/
 -- create raw_supply_chain tables
@@ -253,6 +293,13 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.item
 	IMAGE_URL VARCHAR(16777216)
 );
 
+--> item
+COPY INTO tb_po_prod.raw_supply_chain.item
+FROM @tb_po_prod.public.raw_supply_chain_s3/item
+ON_ERROR = skip_file
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
+
 --> recipe
 CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.recipe
 (
@@ -263,6 +310,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.recipe
 	UNIT_QUANTITY NUMBER(38,9)
 );
 
+--> recipe
+COPY INTO tb_po_prod.raw_supply_chain.recipe
+FROM @tb_po_prod.public.raw_supply_chain_s3/recipe
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
 --> item_prices
 CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.item_prices
 (
@@ -271,6 +323,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.item_prices
 	START_DATE DATE,
 	END_DATE DATE
 );
+
+--> item_prices
+COPY INTO tb_po_prod.raw_supply_chain.item_prices
+FROM @tb_po_prod.public.raw_supply_chain_s3/item_prices
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> price_elasticity
 CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.price_elasticity
@@ -284,6 +341,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.price_elasticity
 	DAY_OF_WEEK NUMBER(2,0)
 );
 
+--> price_elasticity
+COPY INTO tb_po_prod.raw_supply_chain.price_elasticity
+FROM @tb_po_prod.public.raw_supply_chain_s3/price_elasticity
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
 --> menu_prices
 CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.menu_prices
 (
@@ -292,6 +354,11 @@ CREATE OR REPLACE TABLE tb_po_prod.raw_supply_chain.menu_prices
 	START_DATE DATE,
 	END_DATE DATE
 );
+
+--> menu_prices
+COPY INTO tb_po_prod.raw_supply_chain.menu_prices
+FROM @tb_po_prod.public.raw_supply_chain_s3/menu_prices
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 /*---------------------------*/
 -- create raw_safegraph table
@@ -330,6 +397,10 @@ create or replace TABLE tb_po_prod.raw_safegraph.core_poi_geometry (
 	COUNTRY VARCHAR(16777216)
 );
 
+--> core_poi_geometry
+COPY INTO tb_po_prod.raw_safegraph.core_poi_geometry
+FROM @tb_po_prod.public.raw_safegraph_s3/core_poi_geometry.csv
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 /*---------------------------*/
 -- harmonized views
@@ -469,60 +540,81 @@ ORDER BY r.menu_item_id, ip.start_date
   ;
 
 --> menu_item_aggregate_v
-CREATE OR REPLACE VIEW tb_po_prod.harmonized.menu_item_aggregate_v
-	AS
-WITH _point_in_time_cogs AS
-(
-    SELECT DISTINCT
-        r.menu_item_id,
-        ip.start_date,
-        ip.end_date,
-        SUM(ip.unit_price * r.unit_quantity)
-            OVER (PARTITION BY r.menu_item_id, ip.start_date, ip.end_date)
-                AS cost_of_menu_item_usd
-    FROM tb_po_prod.raw_supply_chain.item i
-    JOIN tb_po_prod.raw_supply_chain.recipe r
-        ON i.item_id = r.item_id
-    JOIN tb_po_prod.raw_supply_chain.item_prices ip
-        ON ip.item_id = r.item_id
-    ORDER BY r.menu_item_id, ip.start_date
-)
-SELECT
-    DATE(oh.order_ts) AS date,
-    DAYOFWEEK(date) AS day_of_week,
-    m.menu_type_id,
-    m.truck_brand_name,
-    m.menu_item_id,
-    m.menu_item_name,
-    CASE
-        WHEN pe.price IS NOT NULL THEN pe.price
-        ELSE mp.sales_price_usd
-    END AS sale_price,
-    mp.sales_price_usd  AS base_price,
-    ROUND(pitcogs.cost_of_menu_item_usd,2) AS cost_of_goods_usd,
-    COUNT(DISTINCT oh.order_id) AS count_orders,
-    SUM(od.quantity) AS total_quantity_sold,
-    NULL AS competitor_price
-FROM tb_po_prod.raw_pos.order_header oh
-JOIN tb_po_prod.raw_pos.order_detail od
-    ON oh.order_id = od.order_id
-JOIN tb_po_prod.raw_pos.menu m
-    ON m.menu_item_id = od.menu_item_id
-JOIN tb_po_prod.raw_supply_chain.menu_prices mp
-    ON mp.menu_item_id = m.menu_item_id
-    AND DATE(oh.order_ts) BETWEEN mp.start_date AND mp.end_date
-JOIN _point_in_time_cogs pitcogs
-    ON pitcogs.menu_item_id = m.menu_item_id
-    AND DATE(oh.order_ts) BETWEEN pitcogs.start_date AND pitcogs.end_date
-LEFT JOIN tb_po_prod.raw_supply_chain.price_elasticity pe
-    ON pe.menu_item_id = m.menu_item_id
-    AND pe.from_date <= DATE(oh.order_ts)
-    AND pe.through_date >= DATE(oh.order_ts)
-    AND pe.day_of_week = DAYOFWEEK(DATE(oh.order_ts))
-GROUP BY date, day_of_week, m.menu_type_id, m.truck_brand_name, m.menu_item_id,
-m.menu_item_name, sale_price, base_price, pitcogs.cost_of_menu_item_usd, competitor_price
-ORDER BY date, m.menu_item_id;
+-- CREATE OR REPLACE VIEW tb_po_prod.harmonized.menu_item_aggregate_v
+-- 	AS
+-- WITH _point_in_time_cogs AS
+-- (
+--     SELECT DISTINCT
+--         r.menu_item_id,
+--         ip.start_date,
+--         ip.end_date,
+--         SUM(ip.unit_price * r.unit_quantity)
+--             OVER (PARTITION BY r.menu_item_id, ip.start_date, ip.end_date)
+--                 AS cost_of_menu_item_usd
+--     FROM tb_po_prod.raw_supply_chain.item i
+--     JOIN tb_po_prod.raw_supply_chain.recipe r
+--         ON i.item_id = r.item_id
+--     JOIN tb_po_prod.raw_supply_chain.item_prices ip
+--         ON ip.item_id = r.item_id
+--     ORDER BY r.menu_item_id, ip.start_date
+-- )
+-- SELECT
+--     DATE(oh.order_ts) AS date,
+--     DAYOFWEEK(date) AS day_of_week,
+--     m.menu_type_id,
+--     m.truck_brand_name,
+--     m.menu_item_id,
+--     m.menu_item_name,
+--     CASE
+--         WHEN pe.price IS NOT NULL THEN pe.price
+--         ELSE mp.sales_price_usd
+--     END AS sale_price,
+--     mp.sales_price_usd  AS base_price,
+--     ROUND(pitcogs.cost_of_menu_item_usd,2) AS cost_of_goods_usd,
+--     COUNT(DISTINCT oh.order_id) AS count_orders,
+--     SUM(od.quantity) AS total_quantity_sold,
+--     NULL AS competitor_price
+-- FROM tb_po_prod.raw_pos.order_header oh
+-- JOIN tb_po_prod.raw_pos.order_detail od
+--     ON oh.order_id = od.order_id
+-- JOIN tb_po_prod.raw_pos.menu m
+--     ON m.menu_item_id = od.menu_item_id
+-- JOIN tb_po_prod.raw_supply_chain.menu_prices mp
+--     ON mp.menu_item_id = m.menu_item_id
+--     AND DATE(oh.order_ts) BETWEEN mp.start_date AND mp.end_date
+-- JOIN _point_in_time_cogs pitcogs
+--     ON pitcogs.menu_item_id = m.menu_item_id
+--     AND DATE(oh.order_ts) BETWEEN pitcogs.start_date AND pitcogs.end_date
+-- LEFT JOIN tb_po_prod.raw_supply_chain.price_elasticity pe
+--     ON pe.menu_item_id = m.menu_item_id
+--     AND pe.from_date <= DATE(oh.order_ts)
+--     AND pe.through_date >= DATE(oh.order_ts)
+--     AND pe.day_of_week = DAYOFWEEK(DATE(oh.order_ts))
+-- GROUP BY date, day_of_week, m.menu_type_id, m.truck_brand_name, m.menu_item_id,
+-- m.menu_item_name, sale_price, base_price, pitcogs.cost_of_menu_item_usd, competitor_price
+-- ORDER BY date, m.menu_item_id;
 
+
+--> menu_item_aggregate_dt
+CREATE OR REPLACE TABLE TB_PO_PROD.HARMONIZED.MENU_ITEM_AGGREGATE_DT (
+	DATE DATE,
+	DAY_OF_WEEK NUMBER(2,0),
+	MENU_TYPE_ID NUMBER(38,0),
+	TRUCK_BRAND_NAME VARCHAR(16777216),
+	MENU_ITEM_ID NUMBER(38,0),
+	MENU_ITEM_NAME VARCHAR(16777216),
+	SALE_PRICE NUMBER(38,2),
+	BASE_PRICE NUMBER(38,2),
+	COST_OF_GOODS_USD NUMBER(38,2),
+	COUNT_ORDERS NUMBER(18,0),
+	TOTAL_QUANTITY_SOLD NUMBER(17,0),
+	COMPETITOR_PRICE VARCHAR(16777216)
+);
+
+--> menu_item_aggregate_dt
+COPY INTO tb_po_prod.harmonized.menu_item_aggregate_dt
+FROM @tb_po_prod.public.harmonized_s3/menu_item_aggregate_dt
+file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 /*---------------------------*/
 -- analytics views
@@ -532,7 +624,9 @@ ORDER BY date, m.menu_item_id;
 CREATE OR REPLACE VIEW tb_po_prod.analytics.menu_item_aggregate_v
 	AS
 SELECT * RENAME sale_price AS price
-FROM tb_po_prod.harmonized.menu_item_aggregate_v;
+FROM tb_po_prod.harmonized.menu_item_aggregate_dt; -- should be menu_item_aggregate_dt
+
+
 
 --> menu_item_cogs_and_price_v
 CREATE OR REPLACE VIEW tb_po_prod.analytics.menu_item_cogs_and_price_v
@@ -605,77 +699,78 @@ ORDER BY oic.menu_item_id, oic.year, oic.month)avg_r_c_wo_item;
 -- raw data load
 /*---------------------------*/
 
---> country
-COPY INTO tb_po_prod.raw_pos.country
-FROM @tb_po_prod.public.raw_pos_s3/country/country.csv
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> franchise
+-- COPY INTO tb_po_prod.raw_pos.franchise
+-- FROM @tb_po_prod.public.raw_pos_s3/franchise/franchise.csv
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> franchise
-COPY INTO tb_po_prod.raw_pos.franchise
-FROM @tb_po_prod.public.raw_pos_s3/franchise/franchise.csv
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> location
+-- COPY INTO tb_po_prod.raw_pos.location
+-- FROM @tb_po_prod.public.raw_pos_s3/location/location.csv
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> location
-COPY INTO tb_po_prod.raw_pos.location
-FROM @tb_po_prod.public.raw_pos_s3/location/location.csv
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> menu
+-- COPY INTO tb_po_prod.raw_pos.menu
+-- FROM @tb_po_prod.public.raw_pos_s3/menu/menu.csv
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> menu
-COPY INTO tb_po_prod.raw_pos.menu
-FROM @tb_po_prod.public.raw_pos_s3/menu/menu.csv
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> truck
+-- COPY INTO tb_po_prod.raw_pos.truck
+-- FROM @tb_po_prod.public.raw_pos_s3/truck/truck.csv
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> truck
-COPY INTO tb_po_prod.raw_pos.truck
-FROM @tb_po_prod.public.raw_pos_s3/truck/truck.csv
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
-
---> customer_loyalty
-COPY INTO tb_po_prod.raw_customer.customer_loyalty
-FROM @tb_po_prod.public.raw_customer_s3/customer_loyalty
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> customer_loyalty
+-- COPY INTO tb_po_prod.raw_customer.customer_loyalty
+-- FROM @tb_po_prod.public.raw_customer_s3/customer_loyalty
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> order_header
-COPY INTO tb_po_prod.raw_pos.order_header
-FROM @tb_po_prod.public.raw_pos_s3/order_header
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- COPY INTO tb_po_prod.raw_pos.order_header
+-- FROM @tb_po_prod.public.raw_pos_s3/order_header
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> order_detail
-COPY INTO tb_po_prod.raw_pos.order_detail
-FROM @tb_po_prod.public.raw_pos_s3/order_detail
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> order_detail
+-- COPY INTO tb_po_prod.raw_pos.order_detail
+-- FROM @tb_po_prod.public.raw_pos_s3/order_detail
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
 --> item
-COPY INTO tb_po_prod.raw_supply_chain.item
-FROM @tb_po_prod.public.raw_supply_chain_s3/item
-ON_ERROR = skip_file
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- COPY INTO tb_po_prod.raw_supply_chain.item
+-- FROM @tb_po_prod.public.raw_supply_chain_s3/item
+-- ON_ERROR = skip_file
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> item_prices
-COPY INTO tb_po_prod.raw_supply_chain.item_prices
-FROM @tb_po_prod.public.raw_supply_chain_s3/item_prices
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> item_prices
+-- COPY INTO tb_po_prod.raw_supply_chain.item_prices
+-- FROM @tb_po_prod.public.raw_supply_chain_s3/item_prices
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> menu_prices
-COPY INTO tb_po_prod.raw_supply_chain.menu_prices
-FROM @tb_po_prod.public.raw_supply_chain_s3/menu_prices
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> menu_prices
+-- COPY INTO tb_po_prod.raw_supply_chain.menu_prices
+-- FROM @tb_po_prod.public.raw_supply_chain_s3/menu_prices
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> price_elasticity
-COPY INTO tb_po_prod.raw_supply_chain.price_elasticity
-FROM @tb_po_prod.public.raw_supply_chain_s3/price_elasticity
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> price_elasticity
+-- COPY INTO tb_po_prod.raw_supply_chain.price_elasticity
+-- FROM @tb_po_prod.public.raw_supply_chain_s3/price_elasticity
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> recipe
-COPY INTO tb_po_prod.raw_supply_chain.recipe
-FROM @tb_po_prod.public.raw_supply_chain_s3/recipe
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> recipe
+-- COPY INTO tb_po_prod.raw_supply_chain.recipe
+-- FROM @tb_po_prod.public.raw_supply_chain_s3/recipe
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
---> core_poi_geometry
-COPY INTO tb_po_prod.raw_safegraph.core_poi_geometry
-FROM @tb_po_prod.public.raw_safegraph_s3/core_poi_geometry.csv
-file_format = (format_name = 'tb_po_prod.public.csv_ff');
+-- --> core_poi_geometry
+-- COPY INTO tb_po_prod.raw_safegraph.core_poi_geometry
+-- FROM @tb_po_prod.public.raw_safegraph_s3/core_poi_geometry.csv
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
 
+-- --> menu_item_aggregate_dt
+-- COPY INTO tb_po_prod.harmonized.menu_item_aggregate_dt
+-- FROM @tb_po_prod.public.harmonized_s3/menu_item_aggregate_dt
+-- file_format = (format_name = 'tb_po_prod.public.csv_ff');
+
+-- select * from tb_po_prod.harmonized.menu_item_aggregate_dt;
 
 /*---------------------------*/
 -- scale down warehouse after load
@@ -687,4 +782,3 @@ ALTER WAREHOUSE tb_po_ds_wh SET WAREHOUSE_SIZE = 'Large';
 -- setup completion note
 /*---------------------------*/
 SELECT 'price optimization setup is now complete' AS note;
-
