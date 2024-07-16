@@ -1,27 +1,23 @@
 -- FROSTBYTE_TASTY_BYTES_SETUP_S-- assume our SYSADMIN role
 USE ROLE accountadmin;
 
+-- create tb_po_data_scientist
+CREATE OR REPLACE ROLE tb_po_data_scientist;
+
 /*---------------------------*/
 -- create our Database
 /*---------------------------*/
 CREATE OR REPLACE DATABASE tb_po_prod;
 
-
 /*---------------------------*/
 -- create our Schemas
 /*---------------------------*/
 CREATE OR REPLACE SCHEMA tb_po_prod.raw_pos;
-
 CREATE OR REPLACE SCHEMA tb_po_prod.raw_supply_chain;
-
 CREATE OR REPLACE SCHEMA tb_po_prod.raw_customer;
-
 CREATE OR REPLACE SCHEMA tb_po_prod.harmonized;
-
 CREATE OR REPLACE SCHEMA tb_po_prod.analytics;
-
 CREATE OR REPLACE SCHEMA tb_po_prod.raw_safegraph;
-
 CREATE OR REPLACE SCHEMA tb_po_prod.public;
 
 /*---------------------------*/
@@ -47,6 +43,45 @@ COMMENT = 'streamlit app warehouse for tasty bytes';
 
 -- use our Warehouse
 USE WAREHOUSE tb_po_ds_wh;
+
+-- grant tb_po_ds_wh priviledges to tb_po_data_scientist role
+GRANT USAGE ON WAREHOUSE tb_po_ds_wh TO ROLE tb_po_data_scientist;
+GRANT OPERATE ON WAREHOUSE tb_po_ds_wh TO ROLE tb_po_data_scientist;
+GRANT MONITOR ON WAREHOUSE tb_po_ds_wh TO ROLE tb_po_data_scientist;
+GRANT MODIFY ON WAREHOUSE tb_po_ds_wh TO ROLE tb_po_data_scientist;
+
+-- grant tb_po_app_wh priviledges to tb_po_data_scientist role
+GRANT USAGE ON WAREHOUSE tb_po_app_wh TO ROLE tb_po_data_scientist;
+GRANT OPERATE ON WAREHOUSE tb_po_app_wh TO ROLE tb_po_data_scientist;
+GRANT MONITOR ON WAREHOUSE tb_po_app_wh TO ROLE tb_po_data_scientist;
+GRANT MODIFY ON WAREHOUSE tb_po_app_wh TO ROLE tb_po_data_scientist;
+
+-- grant tb_doc_ai database privileges
+GRANT ALL ON DATABASE tb_po_prod TO ROLE tb_po_data_scientist;
+
+GRANT ALL ON SCHEMA tb_po_prod.raw_pos TO ROLE tb_po_data_scientist;
+GRANT ALL ON SCHEMA tb_po_prod.raw_supply_chain TO ROLE tb_po_data_scientist;
+GRANT ALL ON SCHEMA tb_po_prod.raw_customer TO ROLE tb_po_data_scientist;
+GRANT ALL ON SCHEMA tb_po_prod.harmonized TO ROLE tb_po_data_scientist;
+GRANT ALL ON SCHEMA tb_po_prod.analytics TO ROLE tb_po_data_scientist;
+GRANT ALL ON SCHEMA tb_po_prod.raw_safegraph TO ROLE tb_po_data_scientist;
+GRANT ALL ON SCHEMA tb_po_prod.public TO ROLE tb_po_data_scientist;
+
+GRANT CREATE STAGE ON SCHEMA tb_po_prod.analytics TO ROLE tb_po_data_scientist;
+GRANT CREATE STAGE ON SCHEMA tb_po_prod.public TO ROLE tb_po_data_scientist;
+
+GRANT ALL ON ALL STAGES IN SCHEMA tb_po_prod.analytics TO ROLE tb_po_data_scientist;
+GRANT ALL ON ALL STAGES IN SCHEMA tb_po_prod.public TO ROLE tb_po_data_scientist;
+
+-- set my_user_var variable to equal the logged-in user
+SET my_user_var = (SELECT  '"' || CURRENT_USER() || '"' );
+
+-- grant the logged in user the doc_ai_role
+GRANT ROLE tb_po_data_scientist TO USER identifier($my_user_var);
+
+USE ROLE tb_po_data_scientist;
+
+show grants to role accountadmin;
 
 /*---------------------------*/
 -- create file format
@@ -584,7 +619,6 @@ SELECT
         oi.order_cog - oi.order_item_cog AS order_cog_wo_item
 FROM order_item_total oi
   ;
-
 
 --> menu_item_aggregate_dt
 CREATE OR REPLACE TABLE TB_PO_PROD.HARMONIZED.MENU_ITEM_AGGREGATE_DT (
