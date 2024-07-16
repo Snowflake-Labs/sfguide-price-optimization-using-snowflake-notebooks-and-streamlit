@@ -1,5 +1,5 @@
 -- FROSTBYTE_TASTY_BYTES_SETUP_S-- assume our SYSADMIN role
-USE ROLE sysadmin;
+USE ROLE accountadmin;
 
 /*---------------------------*/
 -- create our Database
@@ -405,9 +405,49 @@ file_format = (format_name = 'tb_po_prod.public.csv_ff');
 -- harmonized views
 /*---------------------------*/
 
---> orders_v
-CREATE OR REPLACE VIEW tb_po_prod.harmonized.orders_v
-	AS
+--> harmonized orders_v
+create or replace view TB_PO_PROD.HARMONIZED.ORDERS_V(
+	ORDER_ID,
+	TRUCK_ID,
+	ORDER_TS,
+	ORDER_DETAIL_ID,
+	LINE_NUMBER,
+	TRUCK_BRAND_NAME,
+	MENU_TYPE,
+	PRIMARY_CITY,
+	REGION,
+	COUNTRY,
+	FRANCHISE_FLAG,
+	FRANCHISE_ID,
+	FRANCHISEE_FIRST_NAME,
+	FRANCHISEE_LAST_NAME,
+	LOCATION_ID,
+	PLACEKEY,
+	LOCATION_NAME,
+	TOP_CATEGORY,
+	SUB_CATEGORY,
+	LATITUDE,
+	LONGITUDE,
+	CUSTOMER_ID,
+	FIRST_NAME,
+	LAST_NAME,
+	E_MAIL,
+	PHONE_NUMBER,
+	CHILDREN_COUNT,
+	GENDER,
+	MARITAL_STATUS,
+	MENU_ITEM_ID,
+	MENU_ITEM_NAME,
+	QUANTITY,
+	UNIT_PRICE,
+	PRICE,
+	ORDER_AMOUNT,
+	ORDER_TAX_AMOUNT,
+	ORDER_DISCOUNT_AMOUNT,
+	ORDER_TOTAL
+) as (
+
+
 SELECT
     oh.order_id,
     oh.truck_id,
@@ -424,7 +464,12 @@ SELECT
     f.first_name AS franchisee_first_name,
     f.last_name AS franchisee_last_name,
     l.location_id,
-    l.placekey,
+    cpg.placekey,
+    cpg.location_name,
+    cpg.top_category,
+    cpg.sub_category,
+    cpg.latitude,
+    cpg.longitude,
     cl.customer_id,
     cl.first_name,
     cl.last_name,
@@ -442,20 +487,22 @@ SELECT
     oh.order_tax_amount,
     oh.order_discount_amount,
     oh.order_total
-FROM tb_po_prod.raw_pos.order_detail od
-JOIN tb_po_prod.raw_pos.order_header oh
+FROM TB_PO_PROD.raw_pos.ORDER_DETAIL od
+JOIN TB_PO_PROD.raw_pos.ORDER_HEADER oh
     ON od.order_id = oh.order_id
-JOIN tb_po_prod.raw_pos.truck t
+JOIN TB_PO_PROD.raw_pos.TRUCK t
     ON oh.truck_id = t.truck_id
-JOIN tb_po_prod.raw_pos.menu m
+JOIN TB_PO_PROD.raw_pos.MENU m
     ON od.menu_item_id = m.menu_item_id
-JOIN tb_po_prod.raw_pos.franchise f
+JOIN TB_PO_PROD.raw_pos.FRANCHISE f
     ON t.franchise_id = f.franchise_id
-JOIN tb_po_prod.raw_pos.location l
+JOIN TB_PO_PROD.raw_pos.LOCATION l
     ON oh.location_id = l.location_id
-LEFT JOIN tb_po_prod.raw_customer.customer_loyalty cl
+JOIN TB_PO_PROD.raw_safegraph.CORE_POI_GEOMETRY cpg
+    ON cpg.placekey = l.placekey
+LEFT JOIN TB_PO_PROD.raw_customer.CUSTOMER_LOYALTY cl
     ON oh.customer_id = cl.customer_id
-  ;
+  );
 
 --> menu_item_cogs_and_price_v
 CREATE OR REPLACE VIEW tb_po_prod.harmonized.menu_item_cogs_and_price_v
@@ -538,83 +585,6 @@ SELECT
 FROM order_item_total oi
   ;
 
--- --> harmonized.menu_item_cogs_and_price_v
--- CREATE OR REPLACE VIEW tb_po_prod.harmonized.menu_item_cogs_and_price_v
--- 	AS
--- SELECT DISTINCT
---     r.menu_item_id,
---     ip.start_date,
---     ip.end_date,
---     SUM(ip.unit_price * r.unit_quantity)
---         OVER (PARTITION BY r.menu_item_id, ip.start_date, ip.end_date)
---             AS cost_of_menu_item_usd,
---     mp.sales_price_usd
--- FROM tb_po_prod.raw_supply_chain.ITEM i
--- JOIN tb_po_prod.raw_supply_chain.RECIPE r
---     ON i.item_id = r.item_id
--- JOIN tb_po_prod.raw_supply_chain.ITEM_PRICES ip
---     ON ip.item_id = r.item_id
--- JOIN tb_po_prod.raw_supply_chain.MENU_PRICES mp
---     ON mp.menu_item_id = r.menu_item_id
---     AND mp.start_date = ip.start_date
--- ORDER BY r.menu_item_id, ip.start_date
---   ;
-
--- --> menu_item_aggregate_v / don't need this table
--- CREATE OR REPLACE VIEW tb_po_prod.harmonized.menu_item_aggregate_v
--- 	AS
--- WITH _point_in_time_cogs AS
--- (
---     SELECT DISTINCT
---         r.menu_item_id,
---         ip.start_date,
---         ip.end_date,
---         SUM(ip.unit_price * r.unit_quantity)
---             OVER (PARTITION BY r.menu_item_id, ip.start_date, ip.end_date)
---                 AS cost_of_menu_item_usd
---     FROM tb_po_prod.raw_supply_chain.item i
---     JOIN tb_po_prod.raw_supply_chain.recipe r
---         ON i.item_id = r.item_id
---     JOIN tb_po_prod.raw_supply_chain.item_prices ip
---         ON ip.item_id = r.item_id
---     ORDER BY r.menu_item_id, ip.start_date
--- )
--- SELECT
---     DATE(oh.order_ts) AS date,
---     DAYOFWEEK(date) AS day_of_week,
---     m.menu_type_id,
---     m.truck_brand_name,
---     m.menu_item_id,
---     m.menu_item_name,
---     CASE
---         WHEN pe.price IS NOT NULL THEN pe.price
---         ELSE mp.sales_price_usd
---     END AS sale_price,
---     mp.sales_price_usd  AS base_price,
---     ROUND(pitcogs.cost_of_menu_item_usd,2) AS cost_of_goods_usd,
---     COUNT(DISTINCT oh.order_id) AS count_orders,
---     SUM(od.quantity) AS total_quantity_sold,
---     NULL AS competitor_price
--- FROM tb_po_prod.raw_pos.order_header oh
--- JOIN tb_po_prod.raw_pos.order_detail od
---     ON oh.order_id = od.order_id
--- JOIN tb_po_prod.raw_pos.menu m
---     ON m.menu_item_id = od.menu_item_id
--- JOIN tb_po_prod.raw_supply_chain.menu_prices mp
---     ON mp.menu_item_id = m.menu_item_id
---     AND DATE(oh.order_ts) BETWEEN mp.start_date AND mp.end_date
--- JOIN _point_in_time_cogs pitcogs
---     ON pitcogs.menu_item_id = m.menu_item_id
---     AND DATE(oh.order_ts) BETWEEN pitcogs.start_date AND pitcogs.end_date
--- LEFT JOIN tb_po_prod.raw_supply_chain.price_elasticity pe
---     ON pe.menu_item_id = m.menu_item_id
---     AND pe.from_date <= DATE(oh.order_ts)
---     AND pe.through_date >= DATE(oh.order_ts)
---     AND pe.day_of_week = DAYOFWEEK(DATE(oh.order_ts))
--- GROUP BY date, day_of_week, m.menu_type_id, m.truck_brand_name, m.menu_item_id,
--- m.menu_item_name, sale_price, base_price, pitcogs.cost_of_menu_item_usd, competitor_price
--- ORDER BY date, m.menu_item_id;
-
 
 --> menu_item_aggregate_dt
 CREATE OR REPLACE TABLE TB_PO_PROD.HARMONIZED.MENU_ITEM_AGGREGATE_DT (
@@ -640,6 +610,53 @@ file_format = (format_name = 'tb_po_prod.public.csv_ff');
 /*---------------------------*/
 -- analytics views
 /*---------------------------*/
+
+--> orders_v
+create or replace view TB_PO_PROD.ANALYTICS.ORDERS_V(
+	DATE,
+	ORDER_ID,
+	TRUCK_ID,
+	ORDER_TS,
+	ORDER_DETAIL_ID,
+	LINE_NUMBER,
+	TRUCK_BRAND_NAME,
+	MENU_TYPE,
+	PRIMARY_CITY,
+	REGION,
+	COUNTRY,
+	FRANCHISE_FLAG,
+	FRANCHISE_ID,
+	FRANCHISEE_FIRST_NAME,
+	FRANCHISEE_LAST_NAME,
+	LOCATION_ID,
+	PLACEKEY,
+	LOCATION_NAME,
+	TOP_CATEGORY,
+	SUB_CATEGORY,
+	LATITUDE,
+	LONGITUDE,
+	CUSTOMER_ID,
+	FIRST_NAME,
+	LAST_NAME,
+	E_MAIL,
+	PHONE_NUMBER,
+	CHILDREN_COUNT,
+	GENDER,
+	MARITAL_STATUS,
+	MENU_ITEM_ID,
+	MENU_ITEM_NAME,
+	QUANTITY,
+	UNIT_PRICE,
+	PRICE,
+	ORDER_AMOUNT,
+	ORDER_TAX_AMOUNT,
+	ORDER_DISCOUNT_AMOUNT,
+	ORDER_TOTAL
+) as (
+
+
+SELECT DATE(o.order_ts) AS date, * FROM TB_PO_PROD.harmonized.ORDERS_V o
+  );
 
 --> menu_item_aggregate_v
 CREATE OR REPLACE VIEW tb_po_prod.analytics.menu_item_aggregate_v
