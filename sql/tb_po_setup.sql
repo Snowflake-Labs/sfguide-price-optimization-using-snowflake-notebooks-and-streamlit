@@ -1,8 +1,9 @@
--- FROSTBYTE_TASTY_BYTES_SETUP_S-- assume our SYSADMIN role
-USE ROLE accountadmin;
+use role securityadmin;
 
 -- create tb_po_data_scientist
 CREATE OR REPLACE ROLE tb_po_data_scientist;
+
+use role accountadmin;
 
 /*---------------------------*/
 -- create our Database
