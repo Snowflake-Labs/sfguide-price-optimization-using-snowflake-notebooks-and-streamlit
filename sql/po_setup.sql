@@ -772,6 +772,6 @@ ALTER WAREHOUSE tb_po_ds_wh SET WAREHOUSE_SIZE = 'Large';
 
 
 /*---------------------------*/
--- setup completion note
+-- sql completion note
 /*---------------------------*/
-SELECT 'price optimization setup is now complete' AS note;
+SELECT 'price optimization sql is now complete' AS note;
