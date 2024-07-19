@@ -1,3 +1,38 @@
+/***************************************************************************************************
+  _______           _            ____          _
+ |__   __|         | |          |  _ \        | |
+    | |  __ _  ___ | |_  _   _  | |_) | _   _ | |_  ___  ___
+    | | / _` |/ __|| __|| | | | |  _ < | | | || __|/ _ \/ __|
+    | || (_| |\__ \| |_ | |_| | | |_) || |_| || |_|  __/\__ \
+    |_| \__,_||___/ \__| \__, | |____/  \__, | \__|\___||___/
+                          __/ |          __/ |
+                         |___/          |___/
+Demo:         Tasty Bytes - Price Optimization SiS
+Version:      v1
+Vignette:     2 - SiS with Snowpark
+Script:       setup_step_1_sis_tables_role.sql
+Create Date:  2023-06-08
+Author:       Marie Coolsaet
+Copyright(c): 2023 Snowflake Inc. All rights reserved.
+****************************************************************************************************
+Description:
+   Create tables used in SiS Streamlit App for Setting Monthly Pricing
+****************************************************************************************************
+SUMMARY OF CHANGES
+Date(yyyy-mm-dd)    Author              Comments
+------------------- ------------------- ------------------------------------------------------------
+2023-06-08        Marie Coolsaet      Initial Release
+2024-03-07        Shriya Rai          Update with Snowpark ML
+***************************************************************************************************/
+
+/*----------------------------------------------------------------------------------
+Instructions: Run all of this script to create the required tables and roles for the SiS app.
+
+Note: In order for these scripts to run you will need to have run the notebook in
+tasty_bytes_price_optimization.ipynb in 1 - Machine Learning with Snowpark.
+
+ ----------------------------------------------------------------------------------*/
+
 use role securityadmin;
 
 -- create tb_po_data_scientist
@@ -87,8 +122,6 @@ show grants to role accountadmin;
 /*---------------------------*/
 -- create file format
 /*---------------------------*/
--- CREATE OR REPLACE FILE FORMAT tb_po_prod.public.csv_ff
--- type = 'csv';
 
 create or replace file format tb_po_prod.public.csv_ff
 type = 'CSV'
