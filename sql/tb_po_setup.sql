@@ -9,14 +9,13 @@
                          |___/          |___/
 Demo:         Tasty Bytes - Price Optimization SiS
 Version:      v1
-Vignette:     2 - SiS with Snowpark
-Script:       setup_step_1_sis_tables_role.sql
+Script:       tb_po_setup.sql
 Create Date:  2023-06-08
 Author:       Marie Coolsaet
 Copyright(c): 2023 Snowflake Inc. All rights reserved.
 ****************************************************************************************************
 Description:
-   Create tables used in SiS Streamlit App for Setting Monthly Pricing
+   Create tables used for Setting Monthly Pricing
 ****************************************************************************************************
 SUMMARY OF CHANGES
 Date(yyyy-mm-dd)    Author              Comments
@@ -26,10 +25,7 @@ Date(yyyy-mm-dd)    Author              Comments
 ***************************************************************************************************/
 
 /*----------------------------------------------------------------------------------
-Instructions: Run all of this script to create the required tables and roles for the SiS app.
-
-Note: In order for these scripts to run you will need to have run the notebook in
-tasty_bytes_price_optimization.ipynb in 1 - Machine Learning with Snowpark.
+Instructions: Run all of this script to create the required tables and roles.
 
  ----------------------------------------------------------------------------------*/
 
