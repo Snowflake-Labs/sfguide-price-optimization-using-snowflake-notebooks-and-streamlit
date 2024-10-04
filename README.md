@@ -1,5 +1,3 @@
-![Price Optimization Header](price_optimization_header.png)
-
 # Price Optimization using Snowflake Notebooks and Streamlit in Snowflake
 
 ## Overview
